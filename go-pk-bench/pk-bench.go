@@ -23,20 +23,20 @@ var k int
         case i := <-buf:
 		rows, err := db.Query("select k from sbtest"+strconv.Itoa(tab+1)+" where id = "+strconv.Itoa(i))
 			if err != nil { log.Fatal(err) }
-		defer rows.Close()
 		for rows.Next() {
 			err := rows.Scan(&k)
 	     		if err != nil { log.Fatal(err) }
 		}
 		err = rows.Err()
 			if err != nil { log.Fatal(err) }
+		rows.Close()
 
 	}
     }
 
 }
 
-var threads = flag.Int("threads", 8, "help message for flagname")
+var threads = flag.Int("threads", 8, "number of user threads")
 
 func main() {
 
@@ -58,7 +58,7 @@ if err != nil {
 }
 defer db.Close()
 
-db.SetMaxIdleConns(10000)
+//db.SetMaxIdleConns(10000)
 
 for j:=0; j<*threads; j++ {
 	go BumpMySQL(db, buffer, j)
